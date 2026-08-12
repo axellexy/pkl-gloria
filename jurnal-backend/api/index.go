@@ -61,7 +61,7 @@ func initApp() {
 		})
 
 		// GET: Hanya ambil data milik user yang mengirimkan parameter ?nama=email_user
-		router.GET("/api/jurnal", func(c *gin.Context) {
+		router.GET("/jurnal", func(c *gin.Context) {
 			emailParam := c.Query("nama")
 
 			var rows *sql.Rows
@@ -94,7 +94,7 @@ func initApp() {
 		})
 
 		// POST: Simpan jurnal dengan identifier email user
-		router.POST("/api/jurnal", func(c *gin.Context) {
+		router.POST("/jurnal", func(c *gin.Context) {
 			var input Jurnal
 
 			if err := c.ShouldBindJSON(&input); err != nil {

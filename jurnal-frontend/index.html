@@ -421,19 +421,7 @@
     </div>
 </div>
 <script>
-    // TARUH BARIS INI DI PALING ATAS SCRIPT
-  const API_URL = "https://jurnal-backend.vercel.app"; 
-
-  // Fungsi-fungsi kamu di bawahnya...
-  function muatDataJurnal() {
-      fetch(`${API_URL}/get-data`) // Sekarang API_URL sudah kenal dan tidak akan error lagi
-      .then(res => res.json())
-      
-  }
-
-  function doAbsen() {
-      
-  }
+    const API_URL = "/api/jurnal";
     const userEmail = localStorage.getItem('user_email');
     const userNama = localStorage.getItem('user_nama') || userEmail;
     const userRole = localStorage.getItem('user_role') || 'user';
