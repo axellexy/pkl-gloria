@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
     handler "jurnal-backend/api"
@@ -12,3 +12,5 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     }
     handler.Handler(w, r)
 }
+
+func main() {}
