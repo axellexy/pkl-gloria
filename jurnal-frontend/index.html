@@ -243,6 +243,31 @@
                     <div class="lbl">Jam Keluar</div>
                 </div>
             </div>
+            <!-- Panel ringkasan untuk Admin/Pembimbing -->
+            <div id="admin-stats" style="display:none; margin-top:12px;">
+                <div style="display:flex; gap:10px;">
+                    <div style="background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:12px;">
+                        <div style="font-weight:800; font-size:1rem;" id="stat-count-masuk">0</div>
+                        <div style="font-size:0.68rem; opacity:0.85;">Masuk</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:12px;">
+                        <div style="font-weight:800; font-size:1rem; color:#ef4444;" id="stat-count-terlambat">0</div>
+                        <div style="font-size:0.68rem; opacity:0.85;">Terlambat</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:12px;">
+                        <div style="font-weight:800; font-size:1rem; color:#0369a1;" id="stat-count-izin">0</div>
+                        <div style="font-size:0.68rem; opacity:0.85;">Izin</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:12px;">
+                        <div style="font-weight:800; font-size:1rem; color:#b45309;" id="stat-count-sakit">0</div>
+                        <div style="font-size:0.68rem; opacity:0.85;">Sakit</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:12px;">
+                        <div style="font-weight:800; font-size:1rem; color:#b91c1c;" id="stat-count-alpha">0</div>
+                        <div style="font-size:0.68rem; opacity:0.85;">Alpha</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- KELOMPOK ABSENSI HARI INI -->
@@ -880,13 +905,55 @@
         const dataHadir = dataKustom || listAbsensi;
         const dataJurnal = dataKustom || listKegiatan;
 
-        const totalHadir = dataHadir.filter(d => d.judul && d.judul.includes('MASUK')).length;
-        const totalIzin = dataHadir.filter(d => d.judul && (d.judul.includes('IZIN') || d.judul.includes('SAKIT'))).length;
+        // Hitung statistik kehadiran: Masuk, Terlambat, Izin, Sakit, Alpha
+        let totalMasuk = 0;
+        let totalMasukSiang = 0;
+        let totalTerlambat = 0;
+        let totalIzin = 0;
+        let totalSakit = 0;
+        let totalAlpha = 0;
+
+        dataHadir.forEach(d => {
+            if (!d.judul) return;
+            const jud = d.judul.toUpperCase();
+            if (jud.includes('MASUK SIANG')) {
+                totalMasukSiang++;
+            } else if (jud.includes('MASUK')) {
+                totalMasuk++;
+                const dt = new Date(d.tanggal);
+                if (!isNaN(dt.getTime())) {
+                    const jam = dt.getHours();
+                    const menit = dt.getMinutes();
+                    if (jam > 9 || (jam === 9 && menit > 0)) totalTerlambat++;
+                }
+            } else if (jud.includes('IZIN')) {
+                totalIzin++;
+            } else if (jud.includes('SAKIT')) {
+                totalSakit++;
+            } else if (jud.includes('ALPHA')) {
+                totalAlpha++;
+            }
+        });
+
         const totalJurnal = dataJurnal.length;
 
-        if (document.getElementById('stat-hadir')) document.getElementById('stat-hadir').innerText = totalHadir;
+        if (document.getElementById('stat-hadir')) document.getElementById('stat-hadir').innerText = totalMasuk + totalMasukSiang;
         if (document.getElementById('stat-izin')) document.getElementById('stat-izin').innerText = totalIzin;
         if (document.getElementById('stat-jurnal')) document.getElementById('stat-jurnal').innerText = totalJurnal;
+
+        // Tampilkan pada panel admin jika ada
+        if (document.getElementById('stat-count-masuk')) document.getElementById('stat-count-masuk').innerText = totalMasuk + totalMasukSiang;
+        if (document.getElementById('stat-count-terlambat')) document.getElementById('stat-count-terlambat').innerText = totalTerlambat;
+        if (document.getElementById('stat-count-izin')) document.getElementById('stat-count-izin').innerText = totalIzin;
+        if (document.getElementById('stat-count-sakit')) document.getElementById('stat-count-sakit').innerText = totalSakit;
+        if (document.getElementById('stat-count-alpha')) document.getElementById('stat-count-alpha').innerText = totalAlpha;
+
+        // Tampilkan panel admin hanya untuk role viewer (pembimbing/admin)
+        const adminPanel = document.getElementById('admin-stats');
+        if (adminPanel) {
+            if (userRole === 'viewer') adminPanel.style.display = 'block';
+            else adminPanel.style.display = 'none';
+        }
     }
 
     function filterRiwayat() {
