@@ -806,6 +806,17 @@
             btnKeluar.disabled = false;
             btnKeluar.innerText = "Klik Absen Keluar";
         }
+
+        // Jika ada absen realtime hari ini, tampilkan 'Hadir' di hero stat total jurnal
+        const statTotalElem = document.getElementById('stat-total-jurnal');
+        if (statTotalElem) {
+            if (absenKhususToday || absenMasukToday) {
+                statTotalElem.innerText = 'Hadir';
+            } else {
+                // fallback ke jumlah jurnal
+                statTotalElem.innerText = listKegiatan.length || 0;
+            }
+        }
     }
 
     // SUBMIT JURNAL KEGIATAN
