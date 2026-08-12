@@ -747,11 +747,14 @@
         const absenMasukToday = listAbsensi.find(item => 
             item.tanggal && item.tanggal.slice(0, 10) === todayStr && item.judul === "ABSENSI: MASUK"
         );
+        const absenMasukSiangToday = listAbsensi.find(item => 
+            item.tanggal && item.tanggal.slice(0, 10) === todayStr && item.judul === "ABSENSI: MASUK SIANG"
+        );
         const absenKeluarToday = listAbsensi.find(item => 
             item.tanggal && item.tanggal.slice(0, 10) === todayStr && item.judul === "ABSENSI: KELUAR"
         );
         const absenKhususToday = listAbsensi.find(item => 
-            item.tanggal && item.tanggal.slice(0, 10) === todayStr && (item.judul.includes("SAKIT") || item.judul.includes("IZIN") || item.judul.includes("ALPHA") || item.judul.includes("MASUK SIANG"))
+            item.tanggal && item.tanggal.slice(0, 10) === todayStr && (item.judul.includes("SAKIT") || item.judul.includes("IZIN") || item.judul.includes("ALPHA"))
         );
 
         const btnMasuk = document.getElementById('btn-absen-masuk');
@@ -778,8 +781,10 @@
             return;
         }
 
-        if (absenMasukToday) {
-            const d = new Date(absenMasukToday.tanggal);
+        const absenMasukEffective = absenMasukToday || absenMasukSiangToday;
+
+        if (absenMasukEffective) {
+            const d = new Date(absenMasukEffective.tanggal);
             const formattedTime = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
             timeMasuk.innerText = `Sudah Absen (${formattedTime} WIB)`;
             statMasuk.innerText = formattedTime;
@@ -819,7 +824,7 @@
                 else if (jud.includes('ALPHA')) heroStatus = 'Alpha';
             }
 
-            if (!heroStatus && (absenMasukToday || (absenKhususToday && absenKhususToday.judul.includes('MASUK SIANG')))) {
+if (!heroStatus && (absenMasukToday || absenMasukSiangToday)) {
                 heroStatus = 'Hadir';
             }
 
