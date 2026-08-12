@@ -807,15 +807,25 @@
             btnKeluar.innerText = "Klik Absen Keluar";
         }
 
-        // Jika ada absen realtime hari ini, tampilkan 'Hadir' di hero stat total jurnal
+        // Tampilkan status realtime di hero: Prioritas -> Sakit/Izin/Alpha -> Hadir (MASUK/MASUK SIANG) -> Jumlah jurnal
         const statTotalElem = document.getElementById('stat-total-jurnal');
         if (statTotalElem) {
-            if (absenKhususToday || absenMasukToday) {
-                statTotalElem.innerText = 'Hadir';
-            } else {
-                // fallback ke jumlah jurnal
-                statTotalElem.innerText = listKegiatan.length || 0;
+            let heroStatus = null;
+
+            if (absenKhususToday) {
+                const jud = (absenKhususToday.judul || '').toUpperCase();
+                if (jud.includes('SAKIT')) heroStatus = 'Sakit';
+                else if (jud.includes('IZIN')) heroStatus = 'Izin';
+                else if (jud.includes('ALPHA')) heroStatus = 'Alpha';
+                else if (jud.includes('MASUK SIANG')) heroStatus = 'Hadir';
             }
+
+            if (!heroStatus && absenMasukToday) {
+                heroStatus = 'Hadir';
+            }
+
+            if (heroStatus) statTotalElem.innerText = heroStatus;
+            else statTotalElem.innerText = (listKegiatan && listKegiatan.length) ? listKegiatan.length : 0;
         }
     }
 
