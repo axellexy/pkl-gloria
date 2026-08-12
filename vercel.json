@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "jurnal-backend/api/index.go", "use": "@vercel/go" },
+    { "src": "jurnal-frontend/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "jurnal-backend/api/index.go" },
+    { "src": "/(.*)", "dest": "jurnal-frontend/$1" }
+  ]
+}
