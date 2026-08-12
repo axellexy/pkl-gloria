@@ -669,35 +669,52 @@
     }
 
     async function doAbsen(tipe) {
-        if (confirm(`Apakah Anda yakin ingin melakukan Absen ${tipe}?`)) {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
-            
-            const payload = {
-                tanggal: now.toISOString(),
-                judul: `ABSENSI: ${tipe.toUpperCase()}`,
-                kegiatan: `Melakukan Absen ${tipe} PKL`,
-                keterangan: `Presensi ${tipe} tercatat jam ${timeString} WIB`,
-                nama: userNama
-            };
+        if (!confirm(`Apakah Anda yakin ingin melakukan Absen ${tipe}?`)) return;
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
 
-                if (response.ok) {
-                    alert(`Absen ${tipe} berhasil dicatat!`);
-                    muatDataJurnal();
-                } else {
-                    alert('Gagal melakukan absensi.');
+        let judulFinal = `ABSENSI: ${tipe.toUpperCase()}`;
+        let kegiatanText = `Melakukan Absen ${tipe} PKL`;
+        let keteranganText = `Presensi ${tipe} tercatat jam ${timeString} WIB`;
+
+        // Untuk absen MASUK: jika absen dilakukan setelah jam 12:00, tanyakan apakah ini 'Masuk Siang'
+        if (tipe === 'Masuk') {
+            const hour = now.getHours();
+            if (hour >= 12) {
+                const pilihMasukSiang = confirm('Anda melakukan absen setelah jam 12:00. Tandai sebagai "Masuk Siang"?\n\nPilih OK untuk Masuk Siang (tidak dianggap terlambat), Batal untuk tetap sebagai Masuk (akan tetap dihitung terlambat jika melewati batas).');
+                if (pilihMasukSiang) {
+                    judulFinal = 'ABSENSI: MASUK SIANG';
+                    kegiatanText = 'Melakukan Absen Masuk Siang PKL';
+                    keteranganText = `Presensi MASUK SIANG tercatat jam ${timeString} WIB`;
                 }
-            } catch (err) {
-                console.error(err);
-                alert('Terjadi kesalahan jaringan.');
             }
+        }
+
+        const payload = {
+            tanggal: now.toISOString(),
+            judul: judulFinal,
+            kegiatan: kegiatanText,
+            keterangan: keteranganText,
+            nama: userNama
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert(`Absen ${tipe} berhasil dicatat!`);
+                muatDataJurnal();
+            } else {
+                alert('Gagal melakukan absensi.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Terjadi kesalahan jaringan.');
         }
     }
 
