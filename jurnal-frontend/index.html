@@ -630,10 +630,10 @@
             const timeStr = dObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
             
             if (item.judul.includes("MASUK SIANG")) {
-                // Khusus: Masuk siang — tuliskan pada keterangan rekapan, tetap tampil sebagai Hadir
+                // Khusus: Masuk siang — tampilkan singkat di keterangan rekapan dan tetap sebagai Hadir
                 grouped[tglKey].masuk = timeStr + ' WIB';
                 grouped[tglKey].status = 'Hadir';
-                grouped[tglKey].keterangan = item.keterangan || `Masuk Siang tercatat jam ${timeStr} WIB`;
+                grouped[tglKey].keterangan = 'Masuk Siang';
             } else if (item.judul.includes("MASUK")) {
                 grouped[tglKey].masuk = timeStr + ' WIB';
 
