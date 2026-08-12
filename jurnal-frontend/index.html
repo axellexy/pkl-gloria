@@ -232,7 +232,7 @@
             <div class="stats-row">
                 <div class="stat-item">
                     <div class="num" id="stat-total-jurnal">0</div>
-                    <div class="lbl">Total Jurnal</div>
+                    <div class="lbl" id="stat-total-jurnal-label">Total Jurnal</div>
                 </div>
                 <div class="stat-item">
                     <div class="num" id="stat-jam-masuk">--:--</div>
@@ -705,13 +705,11 @@
         // Untuk absen MASUK: jika absen dilakukan setelah jam 12:00, tanyakan apakah ini 'Masuk Siang'
         if (tipe === 'Masuk') {
             const hour = now.getHours();
-            if (hour >= 12) {
-                const pilihMasukSiang = confirm('Anda melakukan absen setelah jam 12:00. Tandai sebagai "Masuk Siang"?\n\nPilih OK untuk Masuk Siang (tidak dianggap terlambat), Batal untuk tetap sebagai Masuk (akan tetap dihitung terlambat jika melewati batas).');
-                if (pilihMasukSiang) {
-                    judulFinal = 'ABSENSI: MASUK SIANG';
-                    kegiatanText = 'Melakukan Absen Masuk Siang PKL';
-                    keteranganText = `Presensi MASUK SIANG tercatat jam ${timeString} WIB`;
-                }
+            // Jika absen terjadi jam 13:00 atau setelahnya, otomatis tandai sebagai MASUK SIANG
+            if (hour >= 13) {
+                judulFinal = 'ABSENSI: MASUK SIANG';
+                kegiatanText = 'Melakukan Absen Masuk Siang PKL';
+                keteranganText = `Presensi MASUK SIANG tercatat jam ${timeString} WIB`;
             }
         }
 
@@ -811,6 +809,7 @@
         const statTotalElem = document.getElementById('stat-total-jurnal');
         if (statTotalElem) {
             let heroStatus = null;
+            const labelElem = document.getElementById('stat-total-jurnal-label');
 
             if (absenKhususToday) {
                 const jud = (absenKhususToday.judul || '').toUpperCase();
@@ -824,8 +823,14 @@
                 heroStatus = 'Hadir';
             }
 
-            if (heroStatus) statTotalElem.innerText = heroStatus;
-            else statTotalElem.innerText = (listKegiatan && listKegiatan.length) ? listKegiatan.length : 0;
+            if (heroStatus) {
+                statTotalElem.innerText = heroStatus;
+                if (labelElem) labelElem.innerText = 'Status Kehadiran';
+            } else {
+                const count = (listKegiatan && listKegiatan.length) ? listKegiatan.length : 0;
+                statTotalElem.innerText = count;
+                if (labelElem) labelElem.innerText = 'Total Jurnal';
+            }
         }
     }
 
