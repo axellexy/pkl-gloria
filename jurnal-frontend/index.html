@@ -421,7 +421,9 @@
     </div>
 </div>
 <script>
-    const API_URL = "/api/jurnal";
+    const API_PATH = "/api/jurnal";
+    const API_URL = new URL(API_PATH, window.location.origin).href;
+    console.log('Jurnal frontend API_URL =', API_URL);
     const userEmail = localStorage.getItem('user_email');
     const userNama = localStorage.getItem('user_nama') || userEmail;
     const userRole = localStorage.getItem('user_role') || 'user';
@@ -761,6 +763,7 @@
         const btnMasuk = document.getElementById('btn-absen-masuk');
         const timeMasuk = document.getElementById('time-absen-masuk');
         const statMasuk = document.getElementById('stat-jam-masuk');
+
 
         const btnKeluar = document.getElementById('btn-absen-keluar');
         const timeKeluar = document.getElementById('time-absen-keluar');

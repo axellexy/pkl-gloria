@@ -5,8 +5,9 @@
     { "src": "jurnal-frontend/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index.go" },
-    { "src": "/", "dest": "/jurnal-frontend/index.html" },
-    { "src": "/(.*)", "dest": "/jurnal-frontend/$1" }
+    { "src": "^/api/(.*)$", "dest": "/api/index.go" },
+    { "src": "^/api$", "dest": "/api/index.go" },
+    { "src": "^/$", "dest": "/jurnal-frontend/index.html" },
+    { "src": "^/(.*)$", "dest": "/jurnal-frontend/$1" }
   ]
 }

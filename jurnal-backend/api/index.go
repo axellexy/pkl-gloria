@@ -60,8 +60,8 @@ func initApp() {
 			c.Next()
 		})
 
-		// GET: Hanya ambil data milik user yang mengirimkan parameter ?nama=email_user
-		router.GET("/jurnal", func(c *gin.Context) {
+		// Handlers untuk GET/POST jurnal, termasuk alias root untuk fallback path
+		handleGetJurnal := func(c *gin.Context) {
 			emailParam := c.Query("nama")
 
 			var rows *sql.Rows
@@ -91,10 +91,9 @@ func initApp() {
 			}
 
 			c.JSON(http.StatusOK, listJurnal)
-		})
+		}
 
-		// POST: Simpan jurnal dengan identifier email user
-		router.POST("/jurnal", func(c *gin.Context) {
+		handlePostJurnal := func(c *gin.Context) {
 			var input Jurnal
 
 			if err := c.ShouldBindJSON(&input); err != nil {
@@ -110,7 +109,15 @@ func initApp() {
 			}
 
 			c.JSON(http.StatusOK, gin.H{"message": "Jurnal berhasil disimpan!"})
+		}
+
+		router.GET("/jurnal", handleGetJurnal)
+		router.GET("/", handleGetJurnal)
+		router.GET("/health", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Jurnal backend sehat"})
 		})
+		router.POST("/jurnal", handlePostJurnal)
+		router.POST("/", handlePostJurnal)
 	})
 }
 
